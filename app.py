@@ -1,4 +1,8 @@
 import streamlit as st
+
+if 'authenticated' not in st.session_state:
+    st.session_state['authenticated'] = False
+
 import time
 import pandas as pd
 import plotly.express as px
@@ -253,20 +257,15 @@ def show_dashboard():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-
-
-
     st.markdown(f"""
         <div style='display: flex; align-items: center; gap: 0.3rem;'>
             <span style='color: #666666; font-weight: 300; font-size: 1.3rem; margin: 0; font-family: Inter, Arial, sans-serif;'>
                 INVESTIGACIÓN DIGITAL
             </span>
-            <span style='color: #888888; font-size: 1.1rem; letter-spacing: 1px; margin: 0;'>
-           
-            </span>
         </div>
         <hr style='border: 1px solid #ccc; margin-top: -0.1em; margin-bottom: 1.5em;'>
     """, unsafe_allow_html=True)
+
 
     st.markdown("<br>", unsafe_allow_html=True)
 
