@@ -1,16 +1,14 @@
 import streamlit as st
 
+# ----- INICIALIZACIÓN ÚNICA -----
 if 'authenticated' not in st.session_state:
     st.session_state['authenticated'] = False
 
 import time
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
-import datetime
-
 import base64
-
+from datetime import datetime
 
 # ------- PARAMS LOGIN ---------
 CORRECT_EMAIL = "erickrudelman@dinamic.agency"
@@ -81,7 +79,7 @@ st.markdown("""
             color: #fff !important;
         }
         .success-msg {
-            color: #191919;  /* Negro elegante */
+            color: #191919;
             font-weight: 500;
             text-align: center;
             font-size: 1.15rem;
@@ -94,7 +92,6 @@ st.markdown("""
             font-size: 1.07rem;
             margin-top: 1rem;
         }
-        /* --- Botones minimalistas extra, fuera de la caja --- */
         .mini-btns {
             display: flex;
             justify-content: center;
@@ -120,7 +117,6 @@ st.markdown("""
             color: #111;
             border: 1px solid #bdbdbd;
         }
-        /* --- KPIs --- */
         [data-testid="stMetric"] > div {
             border-radius: 16px;
             border: 1.5px solid #efefef;
@@ -129,7 +125,6 @@ st.markdown("""
             margin-bottom: 18px;
             padding: 0.2em 0.5em 0.2em 0.5em;
         }
-        /* --- Chat estilo comentarios --- */
         .chat-comment {
             background: #fff;
             border-radius: 1.2rem;
@@ -185,9 +180,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
-# ----------------------- FUNCIONES DE APP -----------------------
-
+# ----------- LOGIN -----------
 def show_login():
     st.markdown("""
         <div class="login-box">
@@ -201,7 +194,6 @@ def show_login():
         login_btn = st.form_submit_button("Entrar")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
     st.markdown("""
         <div class="mini-btns">
             <button type="button" class="mini-btn" disabled>Registrar nuevo usuario</button>
@@ -213,20 +205,19 @@ def show_login():
         if email.lower() == CORRECT_EMAIL.lower() and password == CORRECT_PASSWORD:
             with st.spinner("Accediendo..."):
                 time.sleep(2)
-        
             st.markdown('<div class="success-msg"> Acceso concedido.</div>', unsafe_allow_html=True)
             st.session_state['authenticated'] = True
             st.rerun()
         else:
             st.markdown('<div class="error-msg">Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.</div>', unsafe_allow_html=True)
 
+# ---------- LOGO FUNCION ----------
 def get_base64_logo(png_path):
     with open(png_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode("utf-8")
 
+# ---------- DASHBOARD ----------
 def show_dashboard():
-    # --- Configuración de página ---
-
     @st.cache_data
     def load_data():
         df = pd.read_json("data.json")
@@ -244,7 +235,7 @@ def show_dashboard():
             "Fecha",
             min_value=min_date,
             max_value=max_date,
-            value=(min_date, max_date), 
+            value=(min_date, max_date),
             format="DD/MM/YYYY"
         )
         redes = df["social_network"].unique().tolist()
@@ -266,9 +257,7 @@ def show_dashboard():
         <hr style='border: 1px solid #ccc; margin-top: -0.1em; margin-bottom: 1.5em;'>
     """, unsafe_allow_html=True)
 
-
     st.markdown("<br>", unsafe_allow_html=True)
-
     st.markdown("""
     <span style='font-size:1.7rem; font-weight: 280; color: #222; font-family: Inter, Arial, sans-serif;'>
         Análisis de la conversación en redes sociales sobre:
@@ -288,7 +277,6 @@ def show_dashboard():
         """,
         unsafe_allow_html=True
     )
-
     st.markdown("<br><br>", unsafe_allow_html=True)
 
     # ---------- KPIs  -------------
@@ -307,7 +295,7 @@ def show_dashboard():
     with col3:
         st.metric(
             label="Menciones en redes sociales",
-            value=f"{int(len(df_filtrado)):,}"   
+            value=f"{int(len(df_filtrado)):,}"
         )
     st.markdown("---")
 
@@ -339,11 +327,10 @@ def show_dashboard():
         color_discrete_sequence=morado_palette_gen
     )
     fig_gen.update_traces(
-    textinfo='percent',
-    textfont_size=16,
-    hovertemplate='<b>%{label}</b><br>Porcentaje: %{percent:.1%}<br>Cantidad: %{value}<extra></extra>'
-)
-
+        textinfo='percent',
+        textfont_size=16,
+        hovertemplate='<b>%{label}</b><br>Porcentaje: %{percent:.1%}<br>Cantidad: %{value}<extra></extra>'
+    )
 
     # --- Bots % a lo largo del tiempo
     df_filtrado["created_at"] = pd.to_datetime(df_filtrado["created_at"])
@@ -361,7 +348,7 @@ def show_dashboard():
         markers=True
     )
     fig_bots.update_traces(line_color='#7c3aed',
-                               hovertemplate="<b>Fecha:</b> %{x|%d/%m/%Y}<br><b>Porcentaje de Bots:</b> %{y:.1f} %<extra></extra>")
+                           hovertemplate="<b>Fecha:</b> %{x|%d/%m/%Y}<br><b>Porcentaje de Bots:</b> %{y:.1f} %<extra></extra>")
     fig_bots.update_layout(yaxis_ticksuffix=" %")
     fig_bots.update_layout(yaxis_tickformat='.1f', yaxis_title=None, xaxis_title=None)
 
@@ -377,8 +364,8 @@ def show_dashboard():
         color_discrete_sequence=["#7c3aed"]
     )
     fig_red.update_traces(
-    hovertemplate="<b>Red Social:</b> %{x}<br><b>Porcentaje:</b> %{y:.1f} %<extra></extra>"
-)
+        hovertemplate="<b>Red Social:</b> %{x}<br><b>Porcentaje:</b> %{y:.1f} %<extra></extra>"
+    )
     fig_red.update_layout(
         yaxis_tickformat='.1f',
         yaxis_title=None,
@@ -506,13 +493,12 @@ def show_dashboard():
     </style>
     """, unsafe_allow_html=True)
 
-
     st.sidebar.markdown("---")
     if st.sidebar.button("Cerrar sesión"):
         st.session_state['authenticated'] = False
         st.rerun()
 
-# --------- APP ENTRYPOINT ---------
+# --------- APP ENTRYPOINT (¡sólo este if afuera!) ---------
 if not st.session_state['authenticated']:
     show_login()
 else:
