@@ -320,7 +320,7 @@ def show_dashboard():
     # --- Pie de género
     morado_palette_gen = ["#6d28d9","#8c55eb", "#b39cf6", "#d2c9f6"]
     fig_gen = px.pie(
-        df_filtrado,
+        df_filtrado[df_filtrado["gender_type"] != "Otro"],
         names="gender_type",
         title="Distribución por Género",
         hole=0.4,
@@ -381,9 +381,9 @@ def show_dashboard():
 
     col3, col4 = st.columns(2)
     with col3:
-        st.plotly_chart(fig_bots, use_container_width=True)
-    with col4:
         st.plotly_chart(fig_gen, use_container_width=True)
+    with col4:
+        st.plotly_chart(fig_bots, use_container_width=True)
 
     st.markdown("---")
 
@@ -421,7 +421,7 @@ def show_dashboard():
         .to_dict(orient="records")
     )
 
-    st.markdown("## Sección de publicaciones y comentarios", unsafe_allow_html=True)
+    st.markdown("## Publicaciones y comentarios", unsafe_allow_html=True)
 
     for m in mensajes:
         red_social = get_social_network(m.get("pub_url", ""))
