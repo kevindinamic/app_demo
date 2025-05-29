@@ -253,14 +253,7 @@ def show_dashboard():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    from datetime import datetime
 
-    MESES_ES = [
-        "enero", "febrero", "marzo", "abril", "mayo", "junio",
-        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-    ]
-    now = datetime.now()
-    fecha = f"{now.day} de {MESES_ES[now.month - 1]} de {now.year}".upper()
 
 
     st.markdown(f"""
@@ -269,7 +262,7 @@ def show_dashboard():
                 INVESTIGACIÓN DIGITAL
             </span>
             <span style='color: #888888; font-size: 1.1rem; letter-spacing: 1px; margin: 0;'>
-                | {fecha}
+           
             </span>
         </div>
         <hr style='border: 1px solid #ccc; margin-top: -0.1em; margin-bottom: 1.5em;'>
