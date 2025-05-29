@@ -253,11 +253,15 @@ def show_dashboard():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    try:
-        locale.setlocale(locale.LC_TIME, "es_MX.UTF-8")
-    except:
-        locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
-    fecha = datetime.datetime.now().strftime('%d de %B de %Y').upper()
+    from datetime import datetime
+
+    MESES_ES = [
+        "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ]
+    now = datetime.now()
+    fecha = f"{now.day} de {MESES_ES[now.month - 1]} de {now.year}".upper()
+
 
     st.markdown(f"""
         <div style='display: flex; align-items: center; gap: 0.3rem;'>
