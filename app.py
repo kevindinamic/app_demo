@@ -210,7 +210,7 @@ def show_login():
     """, unsafe_allow_html=True)
 
     if login_btn:
-        if email == CORRECT_EMAIL and password == CORRECT_PASSWORD:
+        if email.lower() == CORRECT_EMAIL.lower() and password == CORRECT_PASSWORD:
             with st.spinner("Accediendo..."):
                 time.sleep(2)
         
