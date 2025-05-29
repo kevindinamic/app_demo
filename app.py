@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 import datetime
-import locale
+
 import base64
 
 
