@@ -11,8 +11,8 @@ import base64
 from datetime import datetime
 
 # ------- PARAMS LOGIN ---------
-CORRECT_EMAIL = ""
-CORRECT_PASSWORD = ""
+CORRECT_EMAIL = "erickrudelman@dinamic.agency"
+CORRECT_PASSWORD = "dinamicdata"
 
 # ------- CSS Global ---------
 st.markdown("""
