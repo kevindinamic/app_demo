@@ -11,8 +11,8 @@ import base64
 from datetime import datetime
 
 # ------- PARAMS LOGIN ---------
-CORRECT_EMAIL = "erickrudelman@dinamic.agency"
-CORRECT_PASSWORD = "dinamicdata"
+CORRECT_EMAIL = ""
+CORRECT_PASSWORD = ""
 
 # ------- CSS Global ---------
 st.markdown("""
@@ -204,7 +204,7 @@ def show_login():
     if login_btn:
         if email.lower() == CORRECT_EMAIL.lower() and password == CORRECT_PASSWORD:
             with st.spinner("Accediendo..."):
-                time.sleep(2)
+                time.sleep(0.01)
             st.markdown('<div class="success-msg"> Acceso concedido.</div>', unsafe_allow_html=True)
             st.session_state['authenticated'] = True
             st.rerun()
@@ -243,6 +243,7 @@ def show_dashboard():
 
     mask_fecha = (df["created_at"].dt.date >= date_range[0]) & (df["created_at"].dt.date <= date_range[1])
     df_filtrado = df[mask_fecha]
+    dias_seleccionados = (date_range[1] - date_range[0]).days + 1
     if selected_red != "Todas":
         df_filtrado = df_filtrado[df_filtrado["social_network"] == selected_red]
 
@@ -300,17 +301,24 @@ def show_dashboard():
     st.markdown("---")
 
     # --- Dona de sentimiento
-    morado_palette_sent = ["#ede9fe", "#a78bfa", "#7c3aed", "#6d28d9"]
+    sentiment_colors = {
+        "Simpatía": "#49752C",  
+        "Rechazo": "#922A23",     
+        "Indiferencia": "#A1A1A1"  
+    }
     sent_count = df_filtrado["sentiment"].value_counts().reset_index()
     sent_count.columns = ["sentiment", "count"]
+
     fig_sent = px.pie(
         sent_count,
         names="sentiment",
         values="count",
         title="Distribución de Sentimiento",
         hole=0,
-        color_discrete_sequence=morado_palette_sent
+        color="sentiment",
+        color_discrete_map=sentiment_colors
     )
+
     fig_sent.update_traces(
         textinfo='percent',
         textfont_size=16,
@@ -318,14 +326,21 @@ def show_dashboard():
     )
 
     # --- Pie de género
-    morado_palette_gen = ["#6d28d9","#8c55eb", "#b39cf6", "#d2c9f6"]
+    gen_colors = {
+        "Mujer": "#D735B4",  
+        "Hombre": "#2B55FB",     
+        "Institucional": "#878787"  
+    }
+    
     fig_gen = px.pie(
         df_filtrado[df_filtrado["gender_type"] != "Otro"],
         names="gender_type",
         title="Distribución por Género",
         hole=0.4,
-        color_discrete_sequence=morado_palette_gen
+        color="gender_type",
+        color_discrete_map=gen_colors
     )
+
     fig_gen.update_traces(
         textinfo='percent',
         textfont_size=16,
@@ -347,12 +362,29 @@ def show_dashboard():
         title="Porcentaje de Bots a lo largo del tiempo",
         markers=True
     )
-    fig_bots.update_traces(line_color='#7c3aed',
+    fig_bots.update_traces(line_color="#000000",
                            hovertemplate="<b>Fecha:</b> %{x|%d/%m/%Y}<br><b>Porcentaje de Bots:</b> %{y:.1f} %<extra></extra>")
     fig_bots.update_layout(yaxis_ticksuffix=" %")
     fig_bots.update_layout(yaxis_tickformat='.1f', yaxis_title=None, xaxis_title=None)
+    if dias_seleccionados <= 20:
+        fig_bots.update_xaxes(
+            tickmode='linear',
+            dtick=86400000.0,   
+            tickangle=90
+        )
+
 
     # --- Barras por % Red Social
+    morado_palette_gen = ["#6d28d9","#8c55eb", "#b39cf6", "#d2c9f6"]
+    social_colors = {
+        "Facebook": "#1877F3",      
+        "Instagram": "#87346A",    
+        "Youtube": "#982727",      
+        "X": "#14171A",             
+        "Tiktok": "#6F7070"        
+    }
+
+    
     red_count = df_filtrado["social_network"].value_counts(normalize=True).reset_index()
     red_count.columns = ["Red Social", "Porcentaje"]
     red_count["Porcentaje"] = red_count["Porcentaje"] * 100
@@ -361,16 +393,29 @@ def show_dashboard():
         x="Red Social",
         y="Porcentaje",
         title="Porcentaje por Red Social",
-        color_discrete_sequence=["#7c3aed"]
+        color="Red Social",
+        color_discrete_map=social_colors,
+        text="Porcentaje"
     )
+
+
     fig_red.update_traces(
-        hovertemplate="<b>Red Social:</b> %{x}<br><b>Porcentaje:</b> %{y:.1f} %<extra></extra>"
+        hovertemplate="<b>Red Social:</b> %{x}<br><b>Porcentaje:</b> %{y:.1f} %",
+        texttemplate='%{y:.1f}%',  
+        textposition="outside"      
     )
     fig_red.update_layout(
         yaxis_tickformat='.1f',
         yaxis_title=None,
         xaxis_title=None
     )
+    fig_red.update_layout(showlegend=False)
+    fig_red.update_yaxes(
+    showgrid=False,     
+    visible=False        
+)
+
+
 
     # ---- GRID 2x2 (con st.columns) ----
     col1, col2 = st.columns(2)
@@ -381,9 +426,9 @@ def show_dashboard():
 
     col3, col4 = st.columns(2)
     with col3:
-        st.plotly_chart(fig_gen, use_container_width=True)
-    with col4:
         st.plotly_chart(fig_bots, use_container_width=True)
+    with col4:
+        st.plotly_chart(fig_gen, use_container_width=True)
 
     st.markdown("---")
 
